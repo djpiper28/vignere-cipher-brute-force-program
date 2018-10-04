@@ -1,4 +1,4 @@
-program bruteforcer;
+program bruteforcerhc;
 
 {$mode objfpc}{$H+}
 
@@ -44,11 +44,11 @@ function newKey(oldkey : string):string; begin
           oldkey:='-'+oldkey;
         end else oldkey[length(oldkey)-counter-1]:=chr(integer(ord(oldkey[length(oldkey)-counter-1]))+1);
         oldkey[length(oldkey)-counter]:='A';
-        if oldkey[length(oldkey)-counter-1] <>'Z' then break;
+        if ( (oldkey[length(oldkey)-counter-1] <>'Z') and (integer(ord(oldkey[length(oldkey)-counter-1]))<90) ) then break;
 
       end else begin
         oldkey[length(oldkey)-counter]:=chr(integer(ord(oldkey[length(oldkey)-counter]))+1);
-        if(oldkey[length(oldkey)-counter]<>'Z') then break;
+        if ( (oldkey[length(oldkey)-counter-1] <>'Z') and (integer(ord(oldkey[length(oldkey)-counter-1]))<90) ) then break;
       end;
       counter:=counter+1;
     until counter> length(oldkey);
@@ -75,14 +75,14 @@ function frequencyAnalysis(Text:string):char; begin
   end;
   maxNum:=0;
   letterCounter:=1;
-   while(letterCounter<=length( Text )) do begin
+   while(letterCounter<26) do begin
      if(arrayThing[letterCounter]>=maxNum) then begin
-       maxChrNum:=Integer(ord(letterCounter));
+       maxChrNum:=Integer(ord(letterCounter+64));
        maxnum:=arrayThing[letterCounter];
      end;
      letterCounter:=letterCounter+1;
    end;
-   result:=chr(maxChrNum+65);
+   result:=chr(maxChrNum);
   //returns the most common char (e in the english langauge)
 end;
 var keyCounter,textCounter:integer;
@@ -90,8 +90,8 @@ var keyCounter,textCounter:integer;
   tempTXT:integer;
 function decrypt(CipherText:string;key:string):string; begin
   plainText:='';
-  textCounter:=0;
-  keyCounter:=0;
+  textCounter:=1;
+  keyCounter:=1;
   while(textCounter<=length(CipherText)) do begin
     //DECRYPT CHAR AND ADD TO PLAINTEXT
     while(key[keyCounter]='-') do begin
@@ -118,7 +118,7 @@ function decrypt(CipherText:string;key:string):string; begin
   //returns plain text
   result:=plainText;
 end;
-
+  
 procedure VignereCipherBruteForcer.DoRun;
 var
   _cipherText,_plainText,_key,continueTMP: String;
