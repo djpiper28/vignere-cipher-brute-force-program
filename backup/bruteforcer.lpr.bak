@@ -1,0 +1,98 @@
+program bruteforcer;
+
+{$mode objfpc}{$H+}
+
+uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Classes, SysUtils, CustApp
+  { you can add units after this };
+
+type
+
+  { VignereCipherBruteForcer }
+  freqAnalysisArray = array[1..26] of integer;
+  VignereCipherBruteForcer = class(TCustomApplication)
+  protected
+    procedure DoRun; override;
+  public
+  end;
+
+var tempa,tempb,counter: integer;
+{ VignereCipherBruteForcer }
+function newKey(oldkey : string):string; begin
+  oldkey:=UpperCase(oldkey);
+  if(oldkey[length(oldkey)]<>'Z') then begin
+    result:=chr(ord(oldkey[length(oldkey)])+1);
+  end else begin
+    counter:=0;
+    repeat
+      if(oldkey[counter]='Z') then begin
+        oldkey[counter]:='A';
+      end;
+      counter:=counter+1;
+    until oldkey[counter]<>'Z';
+    result:=chr(ord(oldkey[counter])+1);
+  end;
+  //returns a new key that has increased by one
+end;
+var letterCounter,maxNum,maxChrNum:integer;
+  arrayThing:freqAnalysisArray;
+function frequencyAnalysis(Text:string):char;begin
+  letterCounter:=1;
+  Text:=UpperCase(Text);
+  while(letterCounter<=length( Text )) do begin
+    //A65
+    //Z90
+    arrayThing[integer(ord(Text[letterCounter]))-64]:= arrayThing[integer(ord(Text[letterCounter]))-64] + 1;
+    letterCounter:=letterCounter+1;
+  end;
+  maxNum:=0;
+  letterCounter:=1;
+   while(letterCounter<=length( Text )) do begin
+     if(arrayThing[letterCounter]>=maxNum) then begin
+       maxChrNum:=Integer(ord(letterCounter));
+       maxnum:=arrayThing[letterCounter];
+     end;
+     letterCounter:=letterCounter+1;
+   end;
+   result:=chr(maxChrNum);
+  //returns the most common char (e in the english langauge)
+end;
+var keyCounter,textCounter:integer;
+  plainText:string;
+function decrypt(CipherText:string;key:string):string; begin
+  plainText;='';
+  textCounter:=1;
+  keyCounter:=1;
+  while(textCounter<=length(CipherText) do begin
+    //DECRYPT CHAR AND ADD TO PLAINTEXT
+    if(keyCounter>=length(key)) then begin
+      keyCounter:=1;
+    end else keyCounter:=keyCounter+1;
+    textCounter:=textCounter+1;
+  end;
+  //returns plain text
+end;
+
+procedure VignereCipherBruteForcer.DoRun;
+var
+  key: String;
+begin
+
+  { add your program here }
+
+  // stop program loop
+  Terminate;
+end;
+
+var
+  Application: VignereCipherBruteForcer;
+begin
+  Application:=VignereCipherBruteForcer.Create(nil);
+  Application.Title:='Vignere_Cipher_Brute_Forcer';
+  Application.Run;
+  Application.Free;
+end.
+

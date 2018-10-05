@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\lazarus\fpc\2.6.4\bin\i386-win32\fpc.exe" Date="1150455029"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -vewnhi &quot;-FiF:\Documents\Computer Science\Programming\Iteration\vignere cipher brute forcer\lib\i386-win32&quot; &quot;-FuF:\Documents\Computer Science\Programming\Iteration\vignere cipher brute forcer\&quot; &quot;-FUF:\Documents\Computer Science\Programming\Iteration\vignere cipher brute forcer\lib\i386-win32\&quot; -l bruteforcer.lpr"/>
+</CONFIG>
