@@ -19,7 +19,7 @@ type
   public
   end;
 
-var tempa,tempb,counter: integer;
+var counter: integer;
 { VignereCipherBruteForcer }
 function newKey(oldkey : string):string; begin
     counter:=0;
@@ -97,12 +97,12 @@ function decrypt(CipherText:string;key:string):string; begin
     while(key[keyCounter]='-') do begin
       keyCounter:=keyCounter+1;
     end;
-    tempTXT:=integer(ord(CipherText[textCounter]))+(integer(ord(key[keyCounter]))-64 );
+    tempTXT:=integer(ord(CipherText[textCounter]))-(integer(ord(key[keyCounter]))-65 );
     while(tempTXT>90) do begin
-      tempTXT:=tempTXT-25;//minus one alphabet at a time
+      tempTXT:=tempTXT-26;//minus one alphabet at a time
     end;
     while(tempTXT<65) do begin
-      tempTXT:=tempTXT+25;//plus one alphabet at a time
+      tempTXT:=tempTXT+26;//plus one alphabet at a time
     end;
 
     plainText:=plainText+chr(tempTXT);
@@ -118,28 +118,156 @@ function decrypt(CipherText:string;key:string):string; begin
   //returns plain text
   result:=plainText;
 end;
-  
+function encrypt(plainText:string;key:string):string; begin
+  chipherText:='';
+  textCounter:=1;
+  keyCounter:=1;
+  while(textCounter<=length(plainText)) do begin
+    //DECRYPT CHAR AND ADD TO PLAINTEXT
+    while(key[keyCounter]='-') do begin
+      keyCounter:=keyCounter+1;
+    end;
+    tempTXT:=integer(ord(plainText[textCounter]))+(integer(ord(key[keyCounter]))-65 );
+    while(tempTXT>90) do begin
+      tempTXT:=tempTXT-26;//minus one alphabet at a time
+    end;
+    while(tempTXT<65) do begin
+      tempTXT:=tempTXT+26;//plus one alphabet at a time
+    end;
+
+    chipherText:=chipherText+chr(tempTXT);
+
+    if(keyCounter>=length(key)) then begin
+      keyCounter:=1;
+    end else begin
+      keyCounter:=keyCounter+1;
+    end;
+
+    textCounter:=textCounter+1;
+  end;
+  //returns plain text
+  result:=chipherText;
+end;
+var positives:integer;
+function letterPairAnalysis (plaintext:string):Boolean; begin
+  //'TH HE AN RE ER IN ON AT ND ST ES EN OF TE ED OR TI HI AS TO'
+  // 20 PAIRS
+  positives:=0;
+  if plaintext.Contains('TH') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('HE') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('AN') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('RE') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ER') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('IN') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ON') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('AT') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ND') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ST') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ES') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('EN') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('OF') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('TE') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ED') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('OR') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('TI') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('HI') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('AS') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('TO') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ENT') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ION') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('TIO') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('FOR') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('ARE') then begin
+    positives:=positives+1;
+  end;
+  if plaintext.Contains('THE') and plaintext.Contains('AND') then begin
+    positives:=positives+1;
+    if (positives>20) then begin
+      result:=True;
+    end;
+  end else begin
+    result:=False;
+  end;
+end;
+
 procedure VignereCipherBruteForcer.DoRun;
 var
-  _cipherText,_plainText,_key,continueTMP: String;
+  _cipherText,_plainText,_key,continueTMP,tmp: String;
   continue: Boolean;
 begin
   { add your program here }
+  writeln('-- Works best on longer texts (the exe has a char length so type LONG now to remove this limit)');
   writeln('-- What is the cipher text?');
   readln(_cipherText);
+  if( _cipherText='LONG')then begin
+    writeln('keep inserting text until none is left, at that point put in blank input');
+    _cipherText:='';
+    repeat
+      readln(tmp);
+      _cipherText:=_cipherText+tmp;
+    until tmp='';
+  end;
   _cipherText:=UpperCase(_cipherText);
   _key:='---------A';
   continue:=True;
   repeat
     _plainText:=decrypt(_cipherText,_key);
     writeln('KEY:     ',_key);
-    writeln('PLAINTXT:',_plainText);
-    if(frequencyAnalysis(_plainText)='E') then begin
+    if(frequencyAnalysis(_plainText)='E') and (letterPairAnalysis(_plainText)) then begin
+      writeln('PLAINTXT:',_plainText);
       writeln('-- Potential Solution Found:');
       writeln('-- Do you wish to continue? (Y OR N)');
       readln(continueTMP);
       continueTMP:= UpperCase(continueTMP);
-      if(continueTMP='Y') then begin
+      if(continueTMP='Y') or(continueTMP='') then begin
         continue:=True;
       end else begin
         continue:=False;
@@ -152,7 +280,6 @@ begin
     _key:=newKey(_key);
   until continue=False;
   // stop program loop
-  readln();
   Terminate;
 end;
 
@@ -164,4 +291,3 @@ begin
   Application.Run;
   Application.Free;
 end.
-
