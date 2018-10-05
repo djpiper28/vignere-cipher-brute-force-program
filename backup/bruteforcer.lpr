@@ -18,8 +18,19 @@ type
     procedure DoRun; override;
   public
   end;
-
-var counter: integer;
+var
+  _cipherText,_plainText,_key,continueTMP,tmp: String;
+  continue: Boolean;
+  counter: integer;
+  letterCounter,maxNum,maxChrNum:integer;
+  arrayThing:freqAnalysisArray;
+  i:integer;
+  keyCounter,textCounter:integer;
+  plainText:string;
+  tempTXT:integer;
+  inputText, outputText, keyInput:string;
+  positives:integer;
+  input:string;
 { VignereCipherBruteForcer }
 function newKey(oldkey : string):string; begin
     counter:=0;
@@ -58,9 +69,7 @@ function newKey(oldkey : string):string; begin
 
   //returns a new key that has increased by one
 end;
-var letterCounter,maxNum,maxChrNum:integer;
-  arrayThing:freqAnalysisArray;
-  i:integer;
+
 function frequencyAnalysis(Text:string):char; begin
   i:=1;
   while(i<=26) do begin
@@ -85,13 +94,12 @@ function frequencyAnalysis(Text:string):char; begin
    result:=chr(maxChrNum);
   //returns the most common char (e in the english langauge)
 end;
-var keyCounter,textCounter:integer;
-  plainText:string;
-  tempTXT:integer;
+
 function decrypt(CipherText:string;key:string):string; begin
   plainText:='';
   textCounter:=1;
   keyCounter:=1;
+  CipherText:=UpperCase(CipherText);
   while(textCounter<=length(CipherText)) do begin
     //DECRYPT CHAR AND ADD TO PLAINTEXT
     while(key[keyCounter]='-') do begin
@@ -118,16 +126,16 @@ function decrypt(CipherText:string;key:string):string; begin
   //returns plain text
   result:=plainText;
 end;
-function decrypt(plainText:string;key:string):string; begin
-  chipherText:='';
+function encrypt(CipherText:string;key:string):string; begin
+  plainText:='';
   textCounter:=1;
   keyCounter:=1;
-  while(textCounter<=length(plainText)) do begin
+  while(textCounter<=length(CipherText)) do begin
     //DECRYPT CHAR AND ADD TO PLAINTEXT
     while(key[keyCounter]='-') do begin
       keyCounter:=keyCounter+1;
     end;
-    tempTXT:=integer(ord(plainText[textCounter]))+(integer(ord(key[keyCounter]))-65 );
+    tempTXT:=integer(ord(CipherText[textCounter]))+(integer(ord(key[keyCounter]))-65 );
     while(tempTXT>90) do begin
       tempTXT:=tempTXT-26;//minus one alphabet at a time
     end;
@@ -135,7 +143,7 @@ function decrypt(plainText:string;key:string):string; begin
       tempTXT:=tempTXT+26;//plus one alphabet at a time
     end;
 
-    chipherText:=chipherText+chr(tempTXT);
+    plainText:=plainText+chr(tempTXT);
 
     if(keyCounter>=length(key)) then begin
       keyCounter:=1;
@@ -146,9 +154,9 @@ function decrypt(plainText:string;key:string):string; begin
     textCounter:=textCounter+1;
   end;
   //returns plain text
-  result:=chipherText;
+  result:=plainText;
 end;
-var positives:integer;
+
 function letterPairAnalysis (plaintext:string):Boolean; begin
   //'TH HE AN RE ER IN ON AT ND ST ES EN OF TE ED OR TI HI AS TO'
   // 20 PAIRS
@@ -238,18 +246,49 @@ function letterPairAnalysis (plaintext:string):Boolean; begin
   end;
 end;
 
-procedure VignereCipherBruteForcer.DoRun;
-var
-  _cipherText,_plainText,_key,continueTMP,tmp: String;
-  continue: Boolean;
-begin
+procedure EncryptInterface(); begin
+  writeln('-- What is the plain text?');
+  readln(inputText);
+  if( inputText='LONG')then begin
+    writeln('-- keep inserting text until none is left, at that point put in blank input');
+    inputText:='';
+    repeat
+      readln(tmp);
+      inputText:=inputText+tmp;
+    until tmp='';
+  end;
+  writeln('-- What is the key (alphabet only)');
+  readln(keyInput);
+  writeln('The Cipher Text is:');
+  writeln(encrypt(inputText,keyInput));
+  writeln('Hit enter to close');
+  readln();
+end;
+procedure DecryptInterface(); begin
+  writeln('-- What is the cipher text?');
+  readln(inputText);
+  if( inputText='LONG')then begin
+    writeln('-- keep inserting text until none is left, at that point put in blank input');
+    inputText:='';
+    repeat
+      readln(tmp);
+      inputText:=inputText+tmp;
+    until tmp='';
+  end;
+  writeln('-- What is the key (alphabet only)');
+  readln(keyInput);
+  writeln('The Plain Text is:');
+  writeln(decrypt(inputText,keyInput));
+  writeln('Hit enter to close');
+  readln();
+end;
+procedure BruteForce(); begin
   { add your program here }
   writeln('-- Works best on longer texts (the exe has a char length so type LONG now to remove this limit)');
   writeln('-- What is the cipher text?');
-  _cipherText:='TJCWLZBJAOELHZRWTPRFOAENEMYGNZSXAQOMRDTWGMEWNNKANIEVWVREOIGWRDNYBVRTAMIUXZNGSOHASJRCTJBWRRENEBOLAIEFTDRWMJNLHNWGROHGFZXUIOIFGXOFTZNLFJRQOPTGHZLHGZTQOPIFTCEEOJDXOMWSAVGZWZVWAGRWAYYKEZNKOHEGFOHWSKEWDRASABHKOPTJIYEJSDNLHZFGRHOXTCEVEAFCIGLSWVRLRDKWBJOEDVKCANNSZUWSGJNKHJKCJPMHDMAYSOASNYKMSOOEBJOKTVBDANTSAIDOEMEFOODGNZYWTVRJIQIFGAIJSOTZINMGNOHASOHWAREKOHEFERGSMZADLVBGUOKMNIIFSKEWDDNSNYSZOJTANDFQOPLAKZTZEDDWAJFSDZMGLDTAOIDWRWYVINGMINEVANAJAXELHVTUHVNFEGSSLGTZIIGKOMKQTCIKINTZEBAEEAOJYJUKHJWGFAYGUMDJIQIFAIDVRDFLIISCIGLKGPNVORNQOPRJIQADSRILHRESPJNKANVSRDEVANSZOFKJIALWSVNVRDVWTXAFNJNKKMUEPOHWMDNZIBHKPZEVBJAJDDNYAXTAOISSNYRSMOHWMDNLONCJAKPALZSAFTOMLDKWHDGZOXTSNZVAOGEFTAUFTCEFSKEWDARWEFSASOHWGVMWYJUNEWEWNRAATDNYFJRWVZNAFTOMRZNGTVLJEVDQAYEVIXALEYOJKAAFTROFERVWHDCDENCGMZIFTCETOSBMTOHWRZAJEHOJEJNLHZWSYXLGSZBWHDNVTCALCVNSLNOTEPSWDDNLHDSYAHEFESTMPDSUOYEPOMKKIOSWLATZEWOGKAESTPRWSWEKPJKWRPLWSAOJTCEKISMSJJRGRFCDAISVOUEFSJFHOREJFPLSNYTZEHALIXSLRVTSGZMKTJUKEDNTAOTDEVSWLZCLIJNGFRARZTPKYXHACKOOEMSSNYUHDVTWDYALANHWEOSANXLMDDNYAGLLHZNWWRAYOISLHVTXEVTMRZIFSKEWDARWEFSOEGLSLNOTEKRGVDDANBRWGPLSRJRCTCEEEYAJTDCDENTZRJUYHJULTCEEOITZANWWLGAKPGEFTTOXLJOLEYPGSOSGNJUJWVRZAHMWRVNVWVRZAHMWROVXAXETOJKHABEKSJKWEKYGUMEQENOMTAOJLJAVSJFANAOJMVTAOIATOPTYRZEFSFIFLJRWRPLWSKRWVDEOSAOJSKEWDARWEFSSNYTZEXOVESOJKKAANOIFGBUADZSSNYMMCCMGRZBWSDDWSJVWRJNANNTSGMAEWZLDAGSGBZOFTCEDOJKGUOFGRTOMRFUKTJMHADNLJJBKWCELHZRQOPRWJPSLSOAJTDNYAIOJKXODLZCLIJNANXEDEWRSTDOFOAOJKOOTEMOJAMESLMESDTAYRZEFSFIFVZTWRVNOEYLGVZTGSZEQOPROOMKBUNTSDYOJKOOTEMTGTCEAMVGWAIDOEGLKHJWUANEGUMFSVJUJIOEKOQEJTCEUOPRKEJFLHZMGNOHAFTOMRZLGOFIFGOOCIXKKTVRLOMRWIIFGRXEQOPROAVAYHXHWCFOMTOHWSOAJTXODLZCLIIGGRFSKEOADTZRFAOINEGYSWVRTIFEJMJBOIGLZEGPYEOYGUVLDSZTXOMSHEZDXRZECSVNVHZLHBPLCOPTLHZMANDALUMEKIITZEWOPOICWYJUJEYOFEKAANOIFGREVLJVWTJSWEOHWMNOTENUJEOOKHVRWTCEEWDTZUNOJKOOTEMIKGJIFGOOTEVWWSJMWSJDGNOFGRBELTJCZEXKTAXKWAXHVATTGSZEOHVTFERSSNYAJTDCDENWWHVVWFJRQOP';
-  //readln(_cipherText);
+  readln(_cipherText);
   if( _cipherText='LONG')then begin
-    writeln('keep inserting text until none is left, at that point put in blank input');
+    writeln('-- keep inserting text until none is left, at that point put in blank input');
     _cipherText:='';
     repeat
       readln(tmp);
@@ -281,6 +320,21 @@ begin
     _key:=newKey(_key);
   until continue=False;
   // stop program loop
+end;
+procedure VignereCipherBruteForcer.DoRun;
+
+begin
+  writeln('Please select an option');
+  writeln('B      | BRUTE FORCE ATTACK');
+  writeln('E      | ENCRYPT PLAIN TEXT');
+  writeln('D      | DECRYPT (KNOWN KEY)');
+  readln(input);
+  input:=UpperCase(input);
+  case input of
+    'B' : BruteForce();
+    'E' : EncryptInterface();
+    'D' : DecryptInterface();
+  end; 
   Terminate;
 end;
 
