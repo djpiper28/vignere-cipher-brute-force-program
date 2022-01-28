@@ -23,4 +23,4 @@ A vignenere cipher is not used today for web encryption so it is harmless.
 
 # Linux and Mac
 
-For you users download lazarus and compile the project manually.
+For you users download lazarus and compile the project manually. Edit works on wine just fine lmao.
